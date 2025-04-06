@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h2>Welcome, {{ username }}</h2>
+    <form action="/predict" method="POST">
+        <input type="text" name="symptoms" placeholder="Enter symptoms, comma-separated" required>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if predicted_disease %}
+        <h3>Predicted Disease: {{ predicted_disease }}</h3>
+        <p>{{ dis_des }}</p>
+        <p>Precautions: {{ dis_pre }}</p>
+        <p>Medications: {{ dis_med }}</p>
+        <p>Diet: {{ dis_diet }}</p>
+        <p>Workout: {{ dis_wrkout }}</p>
+
+        <!-- Button to Set Reminder -->
+        <button onclick="setReminder('{{ dis_med }}')">Set Medication Reminder</button>
+    {% endif %}
+
+    <a href="/logout">Logout</a>
+
+    <script>
+        function setReminder(medication) {
+            // Check if Notifications are supported
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notifications.");
+            } else if (Notification.permission === "granted") {
+                // If granted, show notification
+                new Notification("Medication Reminder", {
+                    body: "Time to take your medication: " + medication
+                });
+            } else if (Notification.permission !== "denied") {
+                // Ask for permission
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        new Notification("Medication Reminder", {
+                            body: "Time to take your medication: " + medication
+                        });
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
